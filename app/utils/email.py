@@ -9,6 +9,9 @@ SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 
 
 def send_otp_email(to_email: str, otp: str):
+    if not SMTP_EMAIL or not SMTP_PASSWORD:
+        raise RuntimeError("SMTP_EMAIL or SMTP_PASSWORD not set")
+
     msg = EmailMessage()
     msg["Subject"] = "Your OTP Code"
     msg["From"] = SMTP_EMAIL
@@ -22,7 +25,12 @@ If you did not request this, please ignore this email.
 """
     )
 
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-        server.starttls()
-        server.login(SMTP_EMAIL, SMTP_PASSWORD)
-        server.send_message(msg)
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
+            server.starttls()
+            server.login(SMTP_EMAIL, SMTP_PASSWORD)
+            server.send_message(msg)
+
+    except Exception as e:
+        print("❌ Email sending failed:", str(e))
+        raise
