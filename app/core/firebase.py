@@ -10,7 +10,13 @@ def init_firebase():
     service_account_json = os.getenv("FIREBASE_SERVICE_ACCOUNT")
 
     if not service_account_json:
-        raise RuntimeError("FIREBASE_SERVICE_ACCOUNT env var not set")
+        # ⚠️ Do NOT crash the app
+        print("⚠️ FIREBASE_SERVICE_ACCOUNT not set, skipping Firebase init")
+        return
 
-    cred = credentials.Certificate(json.loads(service_account_json))
-    firebase_admin.initialize_app(cred)
+    try:
+        cred = credentials.Certificate(json.loads(service_account_json))
+        firebase_admin.initialize_app(cred)
+        print("✅ Firebase Admin initialized")
+    except Exception as e:
+        print("❌ Firebase init failed:", e)
