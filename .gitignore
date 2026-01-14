@@ -20,3 +20,6 @@ venv/
 
 # PostgreSQL volume
 postgres_data/
+
+
+firebase-service-account.json
